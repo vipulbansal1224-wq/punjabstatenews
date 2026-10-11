@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block title %}संपर्क करें (Contact & Editorial Desk) - {{ site_name }}{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto bg-white p-8 sm:p-12 rounded-2xl border border-slate-200 shadow-sm">
+    <div class="border-b pb-4 mb-6">
+        <span class="text-xs font-bold text-blue-600 uppercase tracking-wider">संपर्क केंद्र (Get In Touch)</span>
+        <h1 class="text-3xl font-extrabold text-slate-900 mt-1">संपादकीय डेस्क एवं विज्ञापन संपर्क</h1>
+        <p class="text-sm text-slate-500 mt-1">खबर की सूचना देने या विज्ञापन लगाने के लिए हमसे संपर्क करें</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 text-sm">
+        <div class="space-y-4 text-slate-700">
+            <h3 class="text-base font-bold text-slate-900">न्यूज़ रूम व प्रेस विज्ञप्ति</h3>
+            <p>
+                यदि आपके पास पंजाब के किसी भी ज़िले से जुड़ी कोई महत्वपूर्ण सूचना, प्रेस विज्ञप्ति (Press Release), या जनहित की खबर है, तो सीधे हमारी डेस्क पर भेजें:
+            </p>
+            <div class="p-4 bg-blue-50 rounded-xl border border-blue-200 space-y-2 text-xs">
+                <div><strong>ईमेल:</strong> newsdesk@punjabstatenews.com</div>
+                <div><strong>WhatsApp हेल्पलाइन:</strong> +91 98XXX-XXXXX</div>
+                <div><strong>कार्यालय:</strong> सेक्टर 70, मोहाली (SAS Nagar), पंजाब</div>
+            </div>
+
+            <h3 class="text-base font-bold text-slate-900 pt-4">लोकल विज्ञापन एवं स्पॉन्सरशिप</h3>
+            <p class="text-xs text-slate-600">
+                लुधियाना, अमृतसर, जालंधर या पूरे पंजाब में अपने बिज़नेस, IELTS सेंटर या रियल एस्टेट के बैनर लगाने के लिए:
+            </p>
+            <div class="p-4 bg-amber-50 rounded-xl border border-amber-200 text-xs text-amber-900">
+                <strong>Ads Desk:</strong> ads@punjabstatenews.com
+            </div>
+        </div>
+
+        <div>
+            <div class="bg-slate-50 p-6 rounded-xl border border-slate-200">
+                <h4 class="font-bold text-slate-900 mb-4 text-sm">संदेश भेजें (Send Message)</h4>
+                <form onsubmit="alert('धन्यवाद! आपका संदेश प्राप्त हो गया है।'); return false;" class="space-y-3 text-xs">
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">आपका नाम</label>
+                        <input type="text" required placeholder="पूरा नाम" class="w-full p-2.5 border rounded-lg bg-white">
+                    </div>
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">मोबाइल नंबर या ईमेल</label>
+                        <input type="text" required placeholder="संपर्क सूत्र" class="w-full p-2.5 border rounded-lg bg-white">
+                    </div>
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">संबंधित ज़िला</label>
+                        <select class="w-full p-2.5 border rounded-lg bg-white">
+                            {% for d in districts %}
+                            <option value="{{ d['id'] }}">{{ d['name'] }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">संदेश</label>
+                        <textarea rows="3" required placeholder="अपना संदेश या खबर का ब्योरा लिखें..." class="w-full p-2.5 border rounded-lg bg-white"></textarea>
+                    </div>
+                    <button type="submit" class="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg shadow">
+                        संदेश सबमिट करें
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

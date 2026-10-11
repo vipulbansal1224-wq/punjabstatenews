@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+
+{% block title %}{{ city['name'] }} News ({{ city['hindi'] }} की ताज़ा ख़बरें) - {{ site_name }}{% endblock %}
+
+{% block meta_desc %}पंजाब के {{ city['name'] }} ({{ city['hindi'] }} / {{ city['punjabi'] }}) ज़िले से जुड़ी सभी ब्रेकिंग न्यूज़, क्राइम, राजनीति, शिक्षा, और स्थानीय हलचल लाइव पढ़ें।{% endblock %}
+
+{% block content %}
+
+<!-- City Banner Header -->
+<div class="relative rounded-2xl overflow-hidden mb-8 border border-slate-200 shadow-md">
+    <div class="h-48 sm:h-64 w-full relative">
+        <img src="{{ city['image'] }}" alt="{{ city['name'] }} Punjab" class="w-full h-full object-cover brightness-50">
+        <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-900/60 to-transparent"></div>
+        <div class="absolute bottom-6 left-6 right-6 text-white flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+            <div>
+                <div class="flex items-center gap-2 mb-2">
+                    <span class="bg-amber-500 text-slate-950 text-xs font-black uppercase px-2.5 py-0.5 rounded shadow">
+                        {{ city['region'] }} REGION
+                    </span>
+                    <span class="bg-white/20 backdrop-blur-md text-white text-xs px-2.5 py-0.5 rounded">
+                        ज़िला मुख्यालय (District HQ)
+                    </span>
+                </div>
+                <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight">
+                    {{ city['name'] }} <span class="text-amber-400 font-semibold text-xl sm:text-2xl">({{ city['hindi'] }} / {{ city['punjabi'] }})</span>
+                </h1>
+                <p class="text-xs sm:text-sm text-slate-300 mt-1">
+                    {{ city['name'] }} और आसपास के ग्रामीण व शहरी क्षेत्रों से ताज़ा स्वचालित बुलेटिन
+                </p>
+            </div>
+            <div class="shrink-0 text-left sm:text-right">
+                <span class="bg-blue-600/90 backdrop-blur-md text-white text-xs font-bold px-3 py-1 rounded-full inline-flex items-center gap-1.5">
+                    <i class="fa-solid fa-newspaper"></i> {{ articles|length }} सक्रिय ख़बरें
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- City District Quick Switcher -->
+<div class="mb-6 flex items-center gap-2 overflow-x-auto pb-2 scrollbar-thin">
+    <span class="text-xs font-bold text-slate-500 shrink-0 uppercase tracking-wider mr-2">दूसरे ज़िले देखें:</span>
+    {% for d in districts %}
+    <a href="{{ url_for('city_page', city_id=d['id']) }}" class="px-3 py-1 rounded-full text-xs font-medium border transition shrink-0 {% if d['id'] == city['id'] %}bg-blue-600 text-white border-blue-600 font-bold{% else %}bg-white text-slate-700 hover:bg-slate-100 border-slate-200{% endif %}">
+        {{ d['name'] }}
+    </a>
+    {% endfor %}
+</div>
+
+<!-- Articles Grid -->
+{% if articles %}
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    {% for item in articles %}
+    <div class="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-md transition flex flex-col justify-between group">
+        <div class="aspect-[16/9] overflow-hidden relative">
+            <img src="{{ item['image_url'] }}" alt="{{ item['title'] }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+            <span class="absolute top-3 left-3 bg-slate-900/80 text-white text-[11px] font-bold px-2 py-0.5 rounded">
+                {{ item['city_name'] }}
+            </span>
+            <span class="absolute top-3 right-3 bg-amber-500 text-slate-950 text-[10px] font-extrabold uppercase px-1.5 py-0.5 rounded">
+                {{ item['category'] }}
+            </span>
+        </div>
+        <div class="p-4 flex-1 flex flex-col justify-between">
+            <div>
+                <div class="flex items-center gap-2 text-xs text-slate-400 mb-2">
+                    <span><i class="fa-regular fa-clock"></i> {{ item['published_at'][:16] }}</span>
+                    <span>•</span>
+                    <span><i class="fa-solid fa-eye"></i> {{ item['views_count'] }}</span>
+                </div>
+                <h3 class="text-base font-bold text-slate-900 group-hover:text-blue-600 transition leading-snug line-clamp-2 mb-2">
+                    <a href="{{ url_for('article_detail', slug=item['slug']) }}">
+                        {{ item['title'] }}
+                    </a>
+                </h3>
+                <p class="text-xs text-slate-600 line-clamp-3 leading-relaxed mb-4">
+                    {{ item['summary'] }}
+                </p>
+            </div>
+            <div class="pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
+                <span class="text-blue-600 font-semibold text-xs flex items-center gap-1"><i class="fa-solid fa-feather text-[10px]"></i> PunjabState ब्यूरो</span>
+                <a href="{{ url_for('article_detail', slug=item['slug']) }}" class="text-blue-600 font-bold hover:text-blue-800 flex items-center gap-1">
+                    पढ़ें <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="bg-white p-12 rounded-xl text-center border border-slate-200">
+    <div class="w-16 h-16 bg-slate-100 text-slate-400 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">
+        <i class="fa-regular fa-newspaper"></i>
+    </div>
+    <h3 class="text-lg font-bold text-slate-800 mb-2">{{ city['name'] }} में फिलहाल कोई खबर नहीं है</h3>
+    <p class="text-sm text-slate-500 max-w-md mx-auto mb-6">
+        हमारा बैकग्राउंड शेड्यूलर कुछ ही मिनटों में {{ city['name'] }} के लिए नई खबरें स्वतः लोड कर देगा।
+    </p>
+    <a href="{{ url_for('index') }}" class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-semibold hover:bg-blue-700">
+        <i class="fa-solid fa-house"></i> होम पेज पर जाएं
+    </a>
+</div>
+{% endif %}
+
+{% endblock %}

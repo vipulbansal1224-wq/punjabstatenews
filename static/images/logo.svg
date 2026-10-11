@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 85" width="420" height="85">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1e3a8a"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fbbf24"/>
+      <stop offset="100%" stop-color="#f59e0b"/>
+    </linearGradient>
+    <linearGradient id="redGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ef4444"/>
+      <stop offset="100%" stop-color="#dc2626"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Emblem Icon -->
+  <g transform="translate(10, 8)">
+    <rect width="68" height="68" rx="14" fill="url(#bgGrad)" stroke="#3b82f6" stroke-width="2"/>
+    <!-- Newspaper / Signal symbol -->
+    <path d="M18 20 H50 V48 H18 Z" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round"/>
+    <line x1="24" y1="28" x2="44" y2="28" stroke="url(#goldGrad)" stroke-width="3" stroke-linecap="round"/>
+    <line x1="24" y1="36" x2="44" y2="36" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round"/>
+    <line x1="24" y1="42" x2="36" y2="42" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>
+    <!-- Live Broadcast radar arch -->
+    <path d="M44 14 A 12 12 0 0 1 54 24" fill="none" stroke="#ef4444" stroke-width="3" stroke-linecap="round"/>
+    <circle cx="45" cy="23" r="2.5" fill="#ef4444"/>
+  </g>
+
+  <!-- Brand Typography -->
+  <!-- "Punjab" -->
+  <text x="92" y="44" font-family="'Plus Jakarta Sans', 'Segoe UI', Arial, sans-serif" font-weight="900" font-size="34" fill="#0f172a" letter-spacing="-0.5">
+    Punjab<tspan fill="#2563eb">State</tspan>
+  </text>
+
+  <!-- "NEWS" Badge -->
+  <rect x="290" y="18" width="82" height="30" rx="6" fill="url(#redGrad)"/>
+  <text x="331" y="39" font-family="'Plus Jakarta Sans', Arial, sans-serif" font-weight="800" font-size="16" fill="#ffffff" text-anchor="middle" letter-spacing="1.5">
+    NEWS
+  </text>
+
+  <!-- Sub-tagline -->
+  <text x="94" y="66" font-family="'Mukta', Arial, sans-serif" font-weight="600" font-size="13" fill="#64748b" letter-spacing="0.2">
+    पंजाब के सभी 23 जिलों की हर ताज़ा ख़बर
+  </text>
+</svg>

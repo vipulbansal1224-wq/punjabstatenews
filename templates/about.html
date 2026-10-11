@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block title %}हमारे बारे में (About Us) - {{ site_name }}{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto bg-white p-8 sm:p-12 rounded-2xl border border-slate-200 shadow-sm">
+    <div class="border-b pb-4 mb-6">
+        <span class="text-xs font-bold text-blue-600 uppercase tracking-wider">संपादकीय परिचय (About Us)</span>
+        <h1 class="text-3xl font-extrabold text-slate-900 mt-1">PunjabState News के बारे में</h1>
+        <p class="text-sm text-slate-500 mt-1">पंजाब का पहला संपूर्ण हाइपर-लोकल स्वचालित न्यूज़ नेटवर्क</p>
+    </div>
+
+    <div class="prose max-w-none text-slate-700 space-y-4 text-sm leading-relaxed">
+        <p>
+            <strong>PunjabState News</strong> एक स्वतंत्र, डिजिटल और आधुनिक समाचार मंच है, जिसका उद्देश्य पंजाब के सभी 23 ज़िलों (अमृतसर, लुधियाना, जालंधर, पटियाला, बठिंडा, मोहाली, होशियारपुर, पठानकोट, मोगा, फ़िरोज़पुर आदि) के नागरिकों को उनके शहर और गाँव से जुड़ी हर छोटी-बड़ी खबर सबसे पहले और पूरी निष्पक्षता के साथ पहुँचाना है।
+        </p>
+
+        <h3 class="text-lg font-bold text-slate-900 pt-3">हमारा विज़न (Our Vision)</h3>
+        <p>
+            पारंपरिक मीडिया में अक्सर सिर्फ बड़े शहरों या राज्य स्तरीय राजनीति की खबरें ही छपती हैं, जबकि ज़िला स्तर और तहसीलों की महत्वपूर्ण समस्याएं दब जाती हैं। PunjabState News का स्मार्ट ऑटोमेशन इंजन हर ज़िले के प्रशासनिक आदेशों, स्थानीय अपराध नियंत्रण, किसान कल्याण, शिक्षा और विकास कार्यों को प्रमुखता से संकलित करता है।
+        </p>
+
+        <h3 class="text-lg font-bold text-slate-900 pt-3">तथ्य-जांच एवं संपादकीय नीति (Fact-Check & Editorial Policy)</h3>
+        <p>
+            हमारी न्यूज़डेस्क सार्वजनिक RSS फ़ीड्स, अधिकृत पुलिस व प्रशासनिक प्रेस नोट, और प्रतिष्ठित राष्ट्रीय व क्षेत्रीय मीडिया हाउस के इनपुट्स को आधार बनाकर खबरों को पुनः सत्यापित करती है। हर खबर के मुख्य बिंदुओं (Highlights) को स्पष्ट और सरल भाषा में प्रस्तुत किया जाता है ताकि पाठक कम समय में पूरी जानकारी पा सकें।
+        </p>
+
+        <div class="mt-8 p-6 bg-slate-50 rounded-xl border border-slate-200">
+            <h4 class="font-bold text-slate-900 mb-2">मुख्यालय एवं संपर्क डेस्क:</h4>
+            <p class="text-xs text-slate-600">PunjabState News Digital Media Network</p>
+            <p class="text-xs text-slate-600">ईमेल: contact@punjabstatenews.com / editor@punjabstatenews.com</p>
+            <p class="text-xs text-slate-600">स्थान: SAS Nagar (Mohali), Punjab - 160071</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

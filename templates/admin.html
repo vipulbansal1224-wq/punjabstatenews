@@ -1,0 +1,259 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard - {{ site_name }}{% endblock %}
+
+{% block content %}
+
+<!-- Admin Top Bar -->
+<div class="mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+    <div>
+        <div class="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-blue-600 mb-1">
+            <i class="fa-solid fa-gauge-high"></i> कंट्रोल पैनल (Control Panel)
+        </div>
+        <h1 class="text-2xl font-extrabold text-slate-900">PunjabState News Admin Dashboard</h1>
+        <p class="text-xs text-slate-500 mt-1">वेबसाइट का ऑटोमेशन, विज्ञापन और लाइव कंटेंट मैनेज करें</p>
+    </div>
+    <div class="flex items-center gap-3">
+        <button onclick="triggerAdminFetch()" id="btnAdminFetch" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold flex items-center gap-2 shadow-sm transition">
+            <i class="fa-solid fa-arrows-rotate"></i>
+            <span>तुरंत नई ख़बरें फेच करें (Fetch Now)</span>
+        </button>
+        <a href="{{ url_for('index') }}" target="_blank" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-semibold border border-slate-300">
+            साइट देखें <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+        </a>
+    </div>
+</div>
+
+<div id="fetchAlert" class="hidden mb-6 p-4 rounded-xl text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-300"></div>
+
+<!-- Stats Counter Grid -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+        <div class="flex items-center justify-between text-slate-400 mb-2">
+            <span class="text-xs font-bold uppercase">कुल प्रकाशित ख़बरें</span>
+            <i class="fa-solid fa-newspaper text-blue-500 text-lg"></i>
+        </div>
+        <div class="text-2xl font-black text-slate-900">{{ stats['total_news'] }}</div>
+        <span class="text-[11px] text-emerald-600 font-semibold">23 ज़िलों से लाइव</span>
+    </div>
+
+    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+        <div class="flex items-center justify-between text-slate-400 mb-2">
+            <span class="text-xs font-bold uppercase">कुल पेजव्यूज (Views)</span>
+            <i class="fa-solid fa-eye text-emerald-500 text-lg"></i>
+        </div>
+        <div class="text-2xl font-black text-slate-900">{{ stats['total_views'] }}</div>
+        <span class="text-[11px] text-slate-400">लाइव विज़िट्स</span>
+    </div>
+
+    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+        <div class="flex items-center justify-between text-slate-400 mb-2">
+            <span class="text-xs font-bold uppercase">सक्रिय ज़िले</span>
+            <i class="fa-solid fa-map-location-dot text-amber-500 text-lg"></i>
+        </div>
+        <div class="text-2xl font-black text-slate-900">{{ stats['active_cities'] }} / 23</div>
+        <span class="text-[11px] text-amber-600 font-semibold">कवरेज चालू</span>
+    </div>
+
+    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+        <div class="flex items-center justify-between text-slate-400 mb-2">
+            <span class="text-xs font-bold uppercase">ऑटो-शेड्यूलर</span>
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 pulse-dot"></span>
+        </div>
+        <div class="text-base font-bold text-slate-900">हर 20 मिनट</div>
+        <span class="text-[11px] text-slate-400">अंतिम रन: {{ scheduler['last_run'] or 'हाल ही में' }}</span>
+    </div>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-8">
+
+    <!-- Left: Manual News Post Form (Col 6) -->
+    <div class="lg:col-span-6 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+        <h3 class="text-base font-bold text-slate-900 mb-4 pb-2 border-b flex items-center gap-2">
+            <i class="fa-solid fa-pen-nib text-blue-600"></i>
+            विशेष / ब्रेकिंग खबर पोस्ट करें (Manual Post)
+        </h3>
+        <form action="{{ url_for('admin') }}" method="POST" class="space-y-4">
+            <input type="hidden" name="action" value="manual_add">
+
+            <div>
+                <label class="block text-xs font-bold text-slate-700 uppercase mb-1">खबर का शीर्षक (Headline)</label>
+                <input type="text" name="title" required placeholder="उदा: लुधियाना में नई खेल नीति का हुआ ऐलान..." class="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">संबंधित ज़िला (District)</label>
+                    <select name="city" required class="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white">
+                        {% for d in districts %}
+                        <option value="{{ d['id'] }}">{{ d['name'] }} ({{ d['hindi'] }})</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">श्रेणी (Category)</label>
+                    <select name="category" required class="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white">
+                        {% for c in categories %}
+                        <option value="{{ c['id'] }}">{{ c['hindi'] }} ({{ c['name'] }})</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold text-slate-700 uppercase mb-1">संक्षिप्त सारांश (Short Summary)</label>
+                <textarea name="summary" rows="2" placeholder="1-2 वाक्यों में मुख्य बात लिखें..." class="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"></textarea>
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold text-slate-700 uppercase mb-1">विस्तृत समाचार (Content)</label>
+                <textarea name="content" rows="4" required placeholder="पूरा समाचार विस्तार से लिखें..." class="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"></textarea>
+            </div>
+
+            <div class="flex items-center gap-2">
+                <input type="checkbox" id="is_breaking" name="is_breaking" class="rounded text-blue-600 focus:ring-blue-500">
+                <label for="is_breaking" class="text-xs font-semibold text-rose-700 cursor-pointer">
+                    ⚡ इसे ब्रेकिंग न्यूज़ टिकर में भी दिखाएं
+                </label>
+            </div>
+
+            <button type="submit" class="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-lg transition shadow">
+                तुरंत प्रकाशित करें (Publish Now)
+            </button>
+        </form>
+    </div>
+
+    <!-- Right: Monetization Ad Slots Manager (Col 6) -->
+    <div class="lg:col-span-6 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+        <h3 class="text-base font-bold text-slate-900 mb-4 pb-2 border-b flex items-center gap-2">
+            <i class="fa-solid fa-rectangle-ad text-amber-500"></i>
+            विज्ञापन व कमाई प्रबंधन (Monetization & Ads)
+        </h3>
+
+        <div class="space-y-6">
+            <!-- Header Ad Slot -->
+            {% set had = ads.get('header_banner') %}
+            <form action="{{ url_for('admin') }}" method="POST" class="p-4 bg-slate-50 rounded-xl border border-slate-200 text-xs space-y-2.5">
+                <input type="hidden" name="action" value="update_ad">
+                <input type="hidden" name="slot_key" value="header_banner">
+                <div class="flex items-center justify-between font-bold text-slate-800">
+                    <span>1. हेडर बैनर (Top Header Ad - 728x90)</span>
+                    <label class="flex items-center gap-1 font-normal cursor-pointer">
+                        <input type="checkbox" name="is_active" value="1" {% if had and had['is_active'] %}checked{% endif %}>
+                        <span>सक्रिय (Active)</span>
+                    </label>
+                </div>
+                <input type="text" name="title" value="{{ had['title'] if had else '' }}" placeholder="विज्ञापन शीर्षक" class="w-full p-2 border rounded bg-white">
+                <input type="text" name="image_url" value="{{ had['image_url'] if had else '' }}" placeholder="इमेज URL" class="w-full p-2 border rounded bg-white">
+                <div class="grid grid-cols-2 gap-2">
+                    <input type="text" name="target_url" value="{{ had['target_url'] if had else '' }}" placeholder="क्लिक लिंक (URL)" class="p-2 border rounded bg-white">
+                    <input type="text" name="sponsor_name" value="{{ had['sponsor_name'] if had else '' }}" placeholder="स्पॉन्सर नाम" class="p-2 border rounded bg-white">
+                </div>
+                <button type="submit" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-900 text-white rounded font-bold">हेडर विज्ञापन सेव करें</button>
+            </form>
+
+            <!-- Sidebar Ad Slot -->
+            {% set sad = ads.get('sidebar_banner_1') %}
+            <form action="{{ url_for('admin') }}" method="POST" class="p-4 bg-slate-50 rounded-xl border border-slate-200 text-xs space-y-2.5">
+                <input type="hidden" name="action" value="update_ad">
+                <input type="hidden" name="slot_key" value="sidebar_banner_1">
+                <div class="flex items-center justify-between font-bold text-slate-800">
+                    <span>2. साइडबार बैनर (Sidebar Ad - 300x500)</span>
+                    <label class="flex items-center gap-1 font-normal cursor-pointer">
+                        <input type="checkbox" name="is_active" value="1" {% if sad and sad['is_active'] %}checked{% endif %}>
+                        <span>सक्रिय (Active)</span>
+                    </label>
+                </div>
+                <input type="text" name="title" value="{{ sad['title'] if sad else '' }}" placeholder="विज्ञापन शीर्षक" class="w-full p-2 border rounded bg-white">
+                <input type="text" name="image_url" value="{{ sad['image_url'] if sad else '' }}" placeholder="इमेज URL" class="w-full p-2 border rounded bg-white">
+                <div class="grid grid-cols-2 gap-2">
+                    <input type="text" name="target_url" value="{{ sad['target_url'] if sad else '' }}" placeholder="क्लिक लिंक (URL)" class="p-2 border rounded bg-white">
+                    <input type="text" name="sponsor_name" value="{{ sad['sponsor_name'] if sad else '' }}" placeholder="स्पॉन्सर नाम" class="p-2 border rounded bg-white">
+                </div>
+                <button type="submit" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-900 text-white rounded font-bold">साइडबार विज्ञापन सेव करें</button>
+            </form>
+        </div>
+    </div>
+
+</div>
+
+<!-- Recent Articles Management Table -->
+<div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+    <div class="flex items-center justify-between pb-3 border-b mb-4">
+        <h3 class="font-bold text-base text-slate-900 flex items-center gap-2">
+            <i class="fa-solid fa-list text-blue-600"></i>
+            हाल की प्रकाशित ख़बरें (Recent {{ recent|length }} Stories)
+        </h3>
+        <span class="text-xs text-slate-400">लाइव डेटाबेस लिस्ट</span>
+    </div>
+
+    <div class="overflow-x-auto">
+        <table class="w-full text-xs text-left">
+            <thead class="bg-slate-50 text-slate-600 font-bold uppercase border-b border-slate-200">
+                <tr>
+                    <th class="p-3">ID</th>
+                    <th class="p-3">शीर्षक (Headline)</th>
+                    <th class="p-3">ज़िला</th>
+                    <th class="p-3">श्रेणी</th>
+                    <th class="p-3">स्रोत</th>
+                    <th class="p-3">तारीख</th>
+                    <th class="p-3 text-right">एक्शन</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100">
+                {% for item in recent %}
+                <tr class="hover:bg-slate-50 transition">
+                    <td class="p-3 font-mono text-slate-400">#{{ item['id'] }}</td>
+                    <td class="p-3 font-semibold text-slate-800 max-w-xs truncate">
+                        <a href="{{ url_for('article_detail', slug=item['slug']) }}" target="_blank" class="hover:text-blue-600">
+                            {{ item['title'] }}
+                        </a>
+                    </td>
+                    <td class="p-3">
+                        <span class="bg-rose-50 text-rose-700 px-2 py-0.5 rounded font-bold">{{ item['city_name'] }}</span>
+                    </td>
+                    <td class="p-3 text-slate-600 capitalize">{{ item['category'] }}</td>
+                    <td class="p-3 text-slate-500">{{ item['source_name'] or 'Desk' }}</td>
+                    <td class="p-3 text-slate-400">{{ item['published_at'][:16] }}</td>
+                    <td class="p-3 text-right">
+                        <form action="{{ url_for('admin') }}" method="POST" onsubmit="return confirm('क्या आप इस खबर को हटाना चाहते हैं?');" class="inline">
+                            <input type="hidden" name="action" value="delete_article">
+                            <input type="hidden" name="article_id" value="{{ item['id'] }}">
+                            <button type="submit" class="text-rose-600 hover:text-rose-800 p-1">
+                                <i class="fa-solid fa-trash-can"></i>
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+function triggerAdminFetch() {
+    const btn = document.getElementById('btnAdminFetch');
+    const alertBox = document.getElementById('fetchAlert');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> फेचिंग जारी है...';
+
+    fetch('{{ url_for("api_fetch_now") }}', { method: 'POST' })
+        .then(res => res.json())
+        .then(data => {
+            alertBox.innerText = data.message;
+            alertBox.classList.remove('hidden');
+            setTimeout(() => {
+                location.reload();
+            }, 3000);
+        })
+        .catch(err => {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fa-solid fa-arrows-rotate"></i> पुनः प्रयास करें';
+        });
+}
+</script>
+{% endblock %}
