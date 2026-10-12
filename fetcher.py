@@ -61,8 +61,13 @@ def fetch_news_for_city(city_info, max_items=MAX_ITEMS_PER_CITY):
 
             # Assign Real Converted News Image
             category = enhanced['category']
-            fallback_img = city_info.get('image') or CATEGORY_IMAGES.get(category) or CATEGORY_IMAGES['general']
-            image_url = process_article_real_image(source_url, fallback_img)
+            image_url = process_article_real_image(
+                source_url,
+                fallback_img,
+                title=enhanced['title'],
+                city_name=enhanced['city_name'],
+                category=category
+            )
 
             # Check Breaking & Featured
             is_breaking = 1 if is_breaking_story(raw_title) else 0

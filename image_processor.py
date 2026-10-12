@@ -132,10 +132,70 @@ def download_and_convert_image(image_url, article_id_str):
     except Exception as e:
         return None
 
-def process_article_real_image(google_url, fallback_image):
+def generate_news_card(title, city_name="Punjab", category="general"):
+    """
+    Generates an authentic PunjabState News headline card when no photo is provided
+    Never uses third-party dummy stock images!
+    """
+    card_hash = hashlib.md5((title + city_name).encode('utf-8')).hexdigest()[:12]
+    filename = f"card_{card_hash}.jpg"
+    local_path = os.path.join(NEWS_IMAGES_DIR, filename)
+    relative_url = f"/static/news_images/{filename}"
+
+    if os.path.exists(local_path) and os.path.getsize(local_path) > 2000:
+        return relative_url
+
+    try:
+        # 800x450 standard 16:9 canvas
+        img = Image.new('RGB', (800, 450), color=(15, 23, 42))
+        draw = ImageDraw.Draw(img)
+
+        # Gradient / decorative header bar
+        draw.rectangle([0, 0, 800, 60], fill=(30, 58, 138))
+        draw.rectangle([0, 58, 800, 62], fill=(245, 158, 11))
+
+        # Brand header
+        draw.text((25, 20), "PunjabState News  |  विशेष ग्राउंड रिपोर्टिंग", fill=(255, 255, 255))
+        
+        # City & Category Badges
+        draw.rectangle([25, 90, 180, 125], fill=(220, 38, 38))
+        draw.text((38, 98), f"📍 {city_name.upper()}", fill=(255, 255, 255))
+
+        draw.rectangle([195, 90, 320, 125], fill=(37, 99, 235))
+        draw.text((210, 98), f"● {category.upper()}", fill=(255, 255, 255))
+
+        # Headline wrap
+        words = title.split()
+        lines = []
+        curr_line = []
+        for w in words:
+            curr_line.append(w)
+            if len(" ".join(curr_line)) > 38:
+                lines.append(" ".join(curr_line))
+                curr_line = []
+        if curr_line:
+            lines.append(" ".join(curr_line))
+
+        y = 155
+        for line in lines[:4]:
+            draw.text((25, y), line, fill=(248, 250, 252))
+            y += 42
+
+        # Bottom footer bar
+        draw.rectangle([0, 410, 800, 450], fill=(2, 6, 23))
+        draw.text((25, 422), "ਪੰਜਾਬ ਦੇ ਸਾਰੇ 23 ਜ਼ਿਲ੍ਹੇ  •  24x7 Digital Media Network  •  Verified Desk", fill=(148, 163, 184))
+
+        img.save(local_path, "JPEG", quality=90)
+        return relative_url
+    except Exception as e:
+        return relative_url
+
+def process_article_real_image(google_url, fallback_image=None, title="", city_name="Punjab", category="general"):
     """
     Full pipeline:
-    Google RSS link -> Real Publisher URL -> Real image URL -> Downloaded, converted local image
+    Google RSS link -> Real Publisher URL -> Real image URL -> Downloaded, converted local image.
+    If no real photo exists, generates authentic branded PunjabState News card.
+    Never returns third-party dummy stock images!
     """
     try:
         # Step 1: Decode to real publisher
@@ -151,5 +211,8 @@ def process_article_real_image(google_url, fallback_image):
     except Exception as e:
         pass
     
-    # Graceful fallback if original image could not be fetched
-    return fallback_image
+    # If title provided, generate branded breaking news card
+    if title:
+        return generate_news_card(title, city_name, category)
+        
+    return fallback_image or "/static/images/logo.svg"

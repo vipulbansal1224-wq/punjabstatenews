@@ -70,26 +70,26 @@ def init_db():
     default_ads = [
         (
             "header_banner",
-            "Book IELTS & Study Visa in Canada/UK - Top Consultants Ludhiana",
-            "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=1200&h=180&q=80",
+            "Book IELTS & Study Visa in Canada/UK - Top Consultants Punjab",
+            "/static/images/banner_ielts.jpg",
             "https://example.com/visa",
             "Apex Visa Punjab",
             1
         ),
         (
             "sidebar_banner_1",
-            "Luxury Flats & Plots in Mohali - Direct Builder Offer",
-            "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=600&h=500&q=80",
+            "Luxury Flats & Plots in Aerocity Mohali - Direct Builder Offer",
+            "/static/images/banner_real_estate.jpg",
             "https://example.com/realty",
-            "Punjab Builders",
+            "Punjab Royal Builders",
             1
         ),
         (
             "in_article_banner",
-            "Tractor & Agri Equipment Festival - Bathinda & Moga Special Discount",
-            "https://images.unsplash.com/photo-1589923188900-85dae523342b?auto=format&fit=crop&w=900&h=250&q=80",
+            "Tractor & Agri Equipment Festival - 50% Subsidy Scheme",
+            "/static/images/banner_kisan.jpg",
             "https://example.com/agri",
-            "Kisan Agri Punjab",
+            "Punjab Kisan Agri",
             1
         )
     ]
