@@ -9,3 +9,4 @@ Pillow==12.2.0
 googlenewsdecoder>=0.1.0
 httpx>=0.28.1
 selectolax>=0.4.12
+gunicorn>=21.2.0
