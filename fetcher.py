@@ -10,6 +10,7 @@ import time
 from config import PUNJAB_DISTRICTS, GOOGLE_NEWS_RSS_URL, MAX_ITEMS_PER_CITY, CATEGORY_IMAGES
 from database import article_exists, insert_article
 from rewriter import rewrite_article
+from image_processor import process_article_real_image
 
 BREAKING_KEYWORDS = [
     "breaking", "killed", "dead", "arrested", "encounter", "blast", "fire", "accident",
@@ -58,10 +59,10 @@ def fetch_news_for_city(city_info, max_items=MAX_ITEMS_PER_CITY):
             # Process & Rewrite Content
             enhanced = rewrite_article(raw_title, raw_summary, city_info, source_name)
 
-            # Assign Image
+            # Assign Real Converted News Image
             category = enhanced['category']
-            # Fallback priority: City image -> Category image -> Default
-            image_url = city_info.get('image') or CATEGORY_IMAGES.get(category) or CATEGORY_IMAGES['general']
+            fallback_img = city_info.get('image') or CATEGORY_IMAGES.get(category) or CATEGORY_IMAGES['general']
+            image_url = process_article_real_image(source_url, fallback_img)
 
             # Check Breaking & Featured
             is_breaking = 1 if is_breaking_story(raw_title) else 0

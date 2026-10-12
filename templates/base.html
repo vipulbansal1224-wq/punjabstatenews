@@ -55,14 +55,27 @@
                 </span>
             </div>
             <div class="flex items-center gap-3">
-                <a href="https://whatsapp.com" target="_blank" class="inline-flex items-center gap-1 text-emerald-400 hover:text-emerald-300 font-medium">
+                <!-- Trilingual Switcher (Punjabi, Hindi, English) -->
+                <div class="flex items-center bg-slate-800 rounded-lg p-0.5 border border-slate-700 text-[11px] font-bold">
+                    <a href="{{ url_for('set_language', lang_code='pa') }}" onclick="changeGoogleLanguage('pa')" class="px-2 py-0.5 rounded transition {% if current_lang == 'pa' %}bg-amber-500 text-slate-950 font-black shadow-sm{% else %}text-slate-300 hover:text-white{% endif %}">
+                        ☬ ਪੰਜਾਬੀ
+                    </a>
+                    <a href="{{ url_for('set_language', lang_code='hi') }}" onclick="changeGoogleLanguage('hi')" class="px-2 py-0.5 rounded transition {% if current_lang == 'hi' %}bg-amber-500 text-slate-950 font-black shadow-sm{% else %}text-slate-300 hover:text-white{% endif %}">
+                        🇮🇳 हिंदी
+                    </a>
+                    <a href="{{ url_for('set_language', lang_code='en') }}" onclick="changeGoogleLanguage('en')" class="px-2 py-0.5 rounded transition {% if current_lang == 'en' %}bg-amber-500 text-slate-950 font-black shadow-sm{% else %}text-slate-300 hover:text-white{% endif %}">
+                        🇬🇧 English
+                    </a>
+                </div>
+
+                <a href="https://whatsapp.com" target="_blank" class="hidden sm:inline-flex items-center gap-1 text-emerald-400 hover:text-emerald-300 font-medium">
                     <i class="fa-brands fa-whatsapp text-sm"></i>
-                    <span class="hidden sm:inline">WhatsApp चैनल से जुड़ें</span>
+                    <span>WhatsApp</span>
                 </a>
-                <span class="text-slate-600">|</span>
+                <span class="text-slate-600 hidden sm:inline">|</span>
                 <a href="{{ url_for('admin') }}" class="inline-flex items-center gap-1 text-slate-300 hover:text-white">
                     <i class="fa-solid fa-lock text-xs"></i>
-                    <span>Admin Panel</span>
+                    <span>Admin</span>
                 </a>
             </div>
         </div>
@@ -129,25 +142,25 @@
                     <!-- City Dropdown & Quick Cities -->
                     <div class="flex items-center space-x-1 sm:space-x-3 overflow-x-auto py-1 scrollbar-none">
                         <a href="{{ url_for('index') }}" class="px-3 py-1.5 rounded-md text-xs sm:text-sm font-semibold hover:bg-slate-800 whitespace-nowrap {% if active_tab == 'all' %}bg-blue-600 text-white{% endif %}">
-                            <i class="fa-solid fa-house mr-1"></i> होम
+                            <i class="fa-solid fa-house mr-1"></i> {{ t.home }}
                         </a>
 
                         <!-- City Dropdown Modal Trigger -->
                         <div class="relative group">
                             <button class="px-3 py-1.5 rounded-md text-xs sm:text-sm font-semibold bg-amber-500 hover:bg-amber-600 text-slate-950 flex items-center gap-1.5 whitespace-nowrap shadow-sm">
                                 <i class="fa-solid fa-map-location-dot"></i>
-                                <span>पंजाब के 23 ज़िले</span>
+                                <span>{{ t.select_district }}</span>
                                 <i class="fa-solid fa-chevron-down text-xs"></i>
                             </button>
                             <div class="absolute left-0 mt-1 w-72 bg-white text-slate-800 rounded-lg shadow-xl border border-slate-200 py-2 hidden group-hover:block z-50 max-h-96 overflow-y-auto">
                                 <div class="px-3 py-1 text-xs font-bold text-slate-400 uppercase tracking-wider border-b border-slate-100">
-                                    अपना ज़िला चुनें (Select District)
+                                    {{ t.district_filter }}
                                 </div>
                                 <div class="grid grid-cols-2 gap-1 p-2">
                                     {% for d in districts %}
                                     <a href="{{ url_for('city_page', city_id=d['id']) }}" class="px-2.5 py-1.5 rounded hover:bg-blue-50 text-xs font-medium text-slate-700 hover:text-blue-700 flex items-center justify-between">
-                                        <span>{{ d['name'] }}</span>
-                                        <span class="text-[10px] text-slate-400">{{ d['hindi'] }}</span>
+                                        <span>{{ d['punjabi'] if current_lang == 'pa' else (d['hindi'] if current_lang == 'hi' else d['name']) }}</span>
+                                        <span class="text-[10px] text-slate-400">({{ d['name'] }})</span>
                                     </a>
                                     {% endfor %}
                                 </div>
@@ -155,25 +168,25 @@
                         </div>
 
                         <!-- Top City Quick Pills -->
-                        <a href="{{ url_for('city_page', city_id='ludhiana') }}" class="px-2.5 py-1.5 rounded text-xs font-medium hover:bg-slate-800 whitespace-nowrap">लुधियाना</a>
-                        <a href="{{ url_for('city_page', city_id='amritsar') }}" class="px-2.5 py-1.5 rounded text-xs font-medium hover:bg-slate-800 whitespace-nowrap">अमृतसर</a>
-                        <a href="{{ url_for('city_page', city_id='jalandhar') }}" class="px-2.5 py-1.5 rounded text-xs font-medium hover:bg-slate-800 whitespace-nowrap">जालंधर</a>
-                        <a href="{{ url_for('city_page', city_id='patiala') }}" class="px-2.5 py-1.5 rounded text-xs font-medium hover:bg-slate-800 whitespace-nowrap">पटियाला</a>
-                        <a href="{{ url_for('city_page', city_id='bathinda') }}" class="px-2.5 py-1.5 rounded text-xs font-medium hover:bg-slate-800 whitespace-nowrap">बठिंडा</a>
-                        <a href="{{ url_for('city_page', city_id='mohali') }}" class="px-2.5 py-1.5 rounded text-xs font-medium hover:bg-slate-800 whitespace-nowrap">मोहाली</a>
+                        <a href="{{ url_for('city_page', city_id='ludhiana') }}" class="px-2.5 py-1.5 rounded text-xs font-medium hover:bg-slate-800 whitespace-nowrap">{{ 'ਲੁਧਿਆਣਾ' if current_lang == 'pa' else ('लुधियाना' if current_lang == 'hi' else 'Ludhiana') }}</a>
+                        <a href="{{ url_for('city_page', city_id='amritsar') }}" class="px-2.5 py-1.5 rounded text-xs font-medium hover:bg-slate-800 whitespace-nowrap">{{ 'ਅੰਮ੍ਰਿਤਸਰ' if current_lang == 'pa' else ('अमृतसर' if current_lang == 'hi' else 'Amritsar') }}</a>
+                        <a href="{{ url_for('city_page', city_id='jalandhar') }}" class="px-2.5 py-1.5 rounded text-xs font-medium hover:bg-slate-800 whitespace-nowrap">{{ 'ਜਲੰਧਰ' if current_lang == 'pa' else ('जालंधर' if current_lang == 'hi' else 'Jalandhar') }}</a>
+                        <a href="{{ url_for('city_page', city_id='patiala') }}" class="px-2.5 py-1.5 rounded text-xs font-medium hover:bg-slate-800 whitespace-nowrap">{{ 'ਪਟਿਆਲਾ' if current_lang == 'pa' else ('पटियाला' if current_lang == 'hi' else 'Patiala') }}</a>
+                        <a href="{{ url_for('city_page', city_id='bathinda') }}" class="px-2.5 py-1.5 rounded text-xs font-medium hover:bg-slate-800 whitespace-nowrap">{{ 'ਬਠਿੰਡਾ' if current_lang == 'pa' else ('बठिंडा' if current_lang == 'hi' else 'Bathinda') }}</a>
+                        <a href="{{ url_for('city_page', city_id='mohali') }}" class="px-2.5 py-1.5 rounded text-xs font-medium hover:bg-slate-800 whitespace-nowrap">{{ 'ਮੋਹਾਲੀ' if current_lang == 'pa' else ('मोहाली' if current_lang == 'hi' else 'Mohali') }}</a>
                         
                         <span class="text-slate-600 hidden md:inline">|</span>
 
                         <!-- Categories -->
-                        <a href="{{ url_for('category_page', category_id='politics') }}" class="px-2 py-1 rounded text-xs font-medium hover:bg-slate-800 text-slate-300 hover:text-white hidden md:inline-block">राजनीति</a>
-                        <a href="{{ url_for('category_page', category_id='crime') }}" class="px-2 py-1 rounded text-xs font-medium hover:bg-slate-800 text-slate-300 hover:text-white hidden md:inline-block">अपराध</a>
-                        <a href="{{ url_for('category_page', category_id='education') }}" class="px-2 py-1 rounded text-xs font-medium hover:bg-slate-800 text-slate-300 hover:text-white hidden lg:inline-block">शिक्षा/नौकरी</a>
-                        <a href="{{ url_for('category_page', category_id='agriculture') }}" class="px-2 py-1 rounded text-xs font-medium hover:bg-slate-800 text-slate-300 hover:text-white hidden lg:inline-block">किसान/कृषि</a>
+                        <a href="{{ url_for('category_page', category_id='politics') }}" class="px-2 py-1 rounded text-xs font-medium hover:bg-slate-800 text-slate-300 hover:text-white hidden md:inline-block">{{ 'ਰਾਜਨੀਤੀ' if current_lang == 'pa' else ('राजनीति' if current_lang == 'hi' else 'Politics') }}</a>
+                        <a href="{{ url_for('category_page', category_id='crime') }}" class="px-2 py-1 rounded text-xs font-medium hover:bg-slate-800 text-slate-300 hover:text-white hidden md:inline-block">{{ 'ਅਪਰਾਧ' if current_lang == 'pa' else ('अपराध' if current_lang == 'hi' else 'Crime') }}</a>
+                        <a href="{{ url_for('category_page', category_id='education') }}" class="px-2 py-1 rounded text-xs font-medium hover:bg-slate-800 text-slate-300 hover:text-white hidden lg:inline-block">{{ 'ਸਿੱਖਿਆ' if current_lang == 'pa' else ('शिक्षा' if current_lang == 'hi' else 'Jobs') }}</a>
+                        <a href="{{ url_for('category_page', category_id='agriculture') }}" class="px-2 py-1 rounded text-xs font-medium hover:bg-slate-800 text-slate-300 hover:text-white hidden lg:inline-block">{{ 'ਖੇਤੀਬਾੜੀ' if current_lang == 'pa' else ('कृषि' if current_lang == 'hi' else 'Agriculture') }}</a>
                     </div>
 
                     <!-- Search Input -->
                     <form action="{{ url_for('search') }}" method="GET" class="hidden sm:flex items-center relative ml-4">
-                        <input type="text" name="q" placeholder="खबर या शहर खोजें..." class="bg-slate-800 text-white text-xs rounded-full pl-8 pr-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500 w-44 lg:w-56 border border-slate-700">
+                        <input type="text" name="q" placeholder="{{ t.search_placeholder }}" class="bg-slate-800 text-white text-xs rounded-full pl-8 pr-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500 w-44 lg:w-56 border border-slate-700">
                         <i class="fa-solid fa-magnifying-glass absolute left-3 text-slate-400 text-xs"></i>
                     </form>
                 </div>
@@ -301,8 +314,32 @@
             mobileMenuBtn.addEventListener('click', () => {
                 mobileMenu.classList.toggle('hidden');
             });
+    <!-- Google Translate Element & Trilingual Sync -->
+    <div id="google_translate_element" style="display:none;"></div>
+    <script type="text/javascript">
+        function googleTranslateElementInit() {
+            new google.translate.TranslateElement({
+                pageLanguage: 'hi',
+                includedLanguages: 'en,hi,pa',
+                autoDisplay: false
+            }, 'google_translate_element');
+            
+            // Auto sync with session language
+            const activeLang = '{{ current_lang }}';
+            if (activeLang && activeLang !== 'hi') {
+                setTimeout(() => changeGoogleLanguage(activeLang), 600);
+            }
+        }
+
+        function changeGoogleLanguage(lang) {
+            const select = document.querySelector('.goog-te-combo');
+            if (select) {
+                select.value = lang;
+                select.dispatchEvent(new Event('change'));
+            }
         }
     </script>
+    <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
     {% block extra_scripts %}{% endblock %}
 </body>
 </html>

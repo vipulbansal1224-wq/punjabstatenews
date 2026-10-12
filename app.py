@@ -1,11 +1,12 @@
 """
 PunjabState News - Main Flask Web Application
 """
-from flask import Flask, render_template, request, redirect, url_for, jsonify, flash
+from flask import Flask, render_template, request, redirect, url_for, jsonify, flash, session
 import os
 from config import (
     SITE_NAME, SITE_TAGLINE, SITE_DESCRIPTION,
-    PUNJAB_DISTRICTS, CATEGORIES, BASE_DIR
+    PUNJAB_DISTRICTS, CATEGORIES, BASE_DIR,
+    LANGUAGES, TRANSLATIONS
 )
 from database import (
     init_db, get_recent_articles, get_articles_by_city,
@@ -33,6 +34,8 @@ def inject_globals():
     ads = get_active_ads()
     breaking = get_breaking_news(limit=8)
     city_counts = get_city_counts()
+    current_lang = session.get('lang', 'hi')
+    t = TRANSLATIONS.get(current_lang, TRANSLATIONS['hi'])
     return {
         "site_name": SITE_NAME,
         "site_tagline": SITE_TAGLINE,
@@ -41,8 +44,17 @@ def inject_globals():
         "categories": CATEGORIES,
         "ads": ads,
         "breaking_news": breaking,
-        "city_counts": city_counts
+        "city_counts": city_counts,
+        "current_lang": current_lang,
+        "languages": LANGUAGES,
+        "t": t
     }
+
+@app.route("/set-lang/<lang_code>")
+def set_language(lang_code):
+    if lang_code in LANGUAGES:
+        session['lang'] = lang_code
+    return redirect(request.referrer or url_for('index'))
 
 @app.route("/")
 def index():

@@ -244,6 +244,88 @@ CATEGORY_IMAGES = {
 }
 
 # Fetcher Settings
-FETCH_INTERVAL_MINUTES = 20
+FETCH_INTERVAL_MINUTES = 15
 MAX_ITEMS_PER_CITY = 5
 GOOGLE_NEWS_RSS_URL = "https://news.google.com/rss/search?q={query}&hl=en-IN&gl=IN&ceid=IN:en"
+
+# Multilingual UI Dictionary (Hindi, Punjabi, English)
+LANGUAGES = {
+    "hi": {"name": "हिंदी", "code": "hi", "flag": "🇮🇳"},
+    "pa": {"name": "ਪੰਜਾਬੀ", "code": "pa", "flag": "☬"},
+    "en": {"name": "English", "code": "en", "flag": "🇬🇧"}
+}
+
+TRANSLATIONS = {
+    "hi": {
+        "home": "होम",
+        "select_district": "पंजाब के 23 ज़िले",
+        "district_filter": "ज़िला अनुसार ताज़ा समाचार (City Filter)",
+        "all_districts": "सभी ज़िले",
+        "search_placeholder": "खबर या शहर खोजें...",
+        "breaking": "ब्रेकिंग",
+        "read_more": "पूरी खबर पढ़ें",
+        "read": "पढ़ें",
+        "views": "देखे गए",
+        "published": "प्रकाशित",
+        "highlights": "त्वरित सारांश (Quick Highlights)",
+        "share_whatsapp": "WhatsApp पर शेयर करें",
+        "share_msg": "इस खबर को अपने दोस्तों और ग्रुप में शेयर करें:",
+        "related_news": "की अन्य ख़बरें",
+        "all_news": "सभी देखें",
+        "verified_desk": "प्रमाणित संपादकीय डेस्क",
+        "special_report": "PunjabState विशेष रिपोर्टिंग",
+        "about_us": "हमारे बारे में",
+        "contact_us": "संपर्क एवं संपादकीय डेस्क",
+        "admin_panel": "एडमिन पैनल",
+        "tagline": "पंजाब के हर शहर की सबसे तेज़ और सटीक ख़बरें",
+        "all_districts_live": "पंजाब के सभी 23 ज़िले लाइव"
+    },
+    "pa": {
+        "home": "ਮੁੱਖ ਪੰਨਾ",
+        "select_district": "ਪੰਜਾਬ ਦੇ 23 ਜ਼ਿਲ੍ਹੇ",
+        "district_filter": "ਜ਼ਿਲ੍ਹਾ ਵਾਰ ਤਾਜ਼ਾ ਖ਼ਬਰਾਂ (City Filter)",
+        "all_districts": "ਸਾਰੇ ਜ਼ਿਲ੍ਹੇ",
+        "search_placeholder": "ਖ਼ਬਰ ਜਾਂ ਸ਼ਹਿਰ ਖੋਜੋ...",
+        "breaking": "ਤਾਜ਼ਾ ਖ਼ਬਰ",
+        "read_more": "ਪੂਰੀ ਖ਼ਬਰ ਪੜ੍ਹੋ",
+        "read": "ਪੜ੍ਹੋ",
+        "views": "ਵੇਖੀਆਂ ਗਈਆਂ",
+        "published": "ਪ੍ਰਕਾਸ਼ਿਤ",
+        "highlights": "ਮੁੱਖ ਨੁਕਤੇ (Quick Highlights)",
+        "share_whatsapp": "WhatsApp 'ਤੇ ਸ਼ੇਅਰ ਕਰੋ",
+        "share_msg": "ਇਸ ਖ਼ਬਰ ਨੂੰ ਆਪਣੇ ਦੋਸਤਾਂ ਅਤੇ ਗਰੁੱਪਾਂ ਵਿੱਚ ਸ਼ੇਅਰ ਕਰੋ:",
+        "related_news": "ਦੀਆਂ ਹੋਰ ਖ਼ਬਰਾਂ",
+        "all_news": "ਸਭ ਵੇਖੋ",
+        "verified_desk": "ਪ੍ਰਮਾਣਿਤ ਸੰਪਾਦਕੀ ਡੈਸਕ",
+        "special_report": "PunjabState ਵਿਸ਼ੇਸ਼ ਰਿਪੋਰਟਿੰਗ",
+        "about_us": "ਸਾਡੇ ਬਾਰੇ",
+        "contact_us": "ਸੰਪਰਕ ਅਤੇ ਸੰਪਾਦਕੀ ਡੈਸਕ",
+        "admin_panel": "ਐਡਮਿਨ ਪੈਨਲ",
+        "tagline": "ਪੰਜਾਬ ਦੇ ਹਰ ਸ਼ਹਿਰ ਦੀ ਸਭ ਤੋਂ ਤੇਜ਼ ਅਤੇ ਸਹੀ ਖ਼ਬਰ",
+        "all_districts_live": "ਪੰਜਾਬ ਦੇ ਸਾਰੇ 23 ਜ਼ਿਲ੍ਹੇ ਲਾਈਵ"
+    },
+    "en": {
+        "home": "Home",
+        "select_district": "All 23 Punjab Districts",
+        "district_filter": "District-Wise News (City Filter)",
+        "all_districts": "All Districts",
+        "search_placeholder": "Search news or city...",
+        "breaking": "BREAKING",
+        "read_more": "Read Full Story",
+        "read": "Read",
+        "views": "Views",
+        "published": "Published",
+        "highlights": "Quick Highlights",
+        "share_whatsapp": "Share on WhatsApp",
+        "share_msg": "Share this news with friends & groups:",
+        "related_news": "More Stories from",
+        "all_news": "View All",
+        "verified_desk": "Verified Editorial Desk",
+        "special_report": "PunjabState Special Report",
+        "about_us": "About Us",
+        "contact_us": "Contact & Newsdesk",
+        "admin_panel": "Admin Panel",
+        "tagline": "Fastest & Most Accurate Hyperlocal News from Punjab",
+        "all_districts_live": "All 23 Punjab Districts Live"
+    }
+}

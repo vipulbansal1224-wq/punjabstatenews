@@ -9,17 +9,17 @@
     <div class="flex items-center justify-between mb-2">
         <span class="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
             <i class="fa-solid fa-location-crosshairs text-blue-600"></i>
-            ज़िला अनुसार ताज़ा समाचार चुनें (City Filter)
+            {{ t.district_filter }}
         </span>
-        <span class="text-[11px] text-slate-400">सभी 23 ज़िले सक्रिय</span>
+        <span class="text-[11px] text-slate-400">✓ {{ t.all_districts_live }}</span>
     </div>
     <div class="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-thin">
         <a href="{{ url_for('index') }}" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-blue-600 text-white shrink-0 shadow-sm flex items-center gap-1">
-            <i class="fa-solid fa-border-all"></i> सभी ज़िले
+            <i class="fa-solid fa-border-all"></i> {{ t.all_districts }}
         </a>
         {% for d in districts %}
         <a href="{{ url_for('city_page', city_id=d['id']) }}" class="px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-100 hover:bg-amber-100 hover:text-amber-900 text-slate-700 shrink-0 transition border border-slate-200 flex items-center gap-1.5">
-            <span>{{ d['name'] }}</span>
+            <span>{{ d['punjabi'] if current_lang == 'pa' else (d['hindi'] if current_lang == 'hi' else d['name']) }}</span>
             {% if city_counts.get(d['id']) %}
             <span class="bg-slate-200 text-slate-600 px-1.5 py-0.2 rounded-full text-[10px] font-bold">{{ city_counts[d['id']] }}</span>
             {% endif %}
@@ -280,53 +280,23 @@
             </div>
         </div>
 
-        <!-- Automation & Realtime Status Widget -->
-        <div class="bg-slate-900 text-white p-4 rounded-xl shadow-sm text-xs">
-            <div class="flex items-center justify-between mb-2">
-                <span class="font-bold text-amber-400 flex items-center gap-1.5">
-                    <span class="w-2 h-2 rounded-full bg-emerald-400 pulse-dot"></span>
-                    ऑटो-सिस्टम स्टेटस
-                </span>
-                <span class="text-[10px] text-slate-400">v2.0 Active</span>
+        <!-- PunjabState Verified Media Desk Card -->
+        <div class="bg-slate-900 text-white p-5 rounded-xl shadow-sm text-xs border border-slate-800">
+            <div class="flex items-center gap-2 mb-2 text-amber-400 font-bold">
+                <i class="fa-solid fa-certificate text-base"></i>
+                <span>PunjabState 24x7 News Desk</span>
             </div>
             <p class="text-slate-300 text-[11px] leading-relaxed mb-3">
-                हमारा पाइथन AI शेड्यूलर पंजाब के सभी 23 ज़िलों की 100+ विश्वसनीय न्यूज़ फीड्स को हर 20 मिनट में ऑटोमैटिक स्कैन करता है।
+                {{ t.tagline }}
             </p>
-            <button onclick="triggerImmediateFetch()" id="btnFetchSidebar" class="w-full py-1.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded text-xs transition flex items-center justify-center gap-1.5">
-                <i class="fa-solid fa-rotate"></i>
-                <span>अभी ताज़ा ख़बरें फेच करें</span>
-            </button>
-            <div id="fetchStatusText" class="hidden text-center text-[11px] text-emerald-400 mt-2 font-medium"></div>
+            <div class="pt-2 border-t border-slate-800 flex items-center justify-between text-[10px] text-slate-400">
+                <span>✓ {{ t.all_districts_live }}</span>
+                <span class="text-emerald-400">● 24x7 Live</span>
+            </div>
         </div>
 
     </div>
 
 </div>
 
-{% endblock %}
-
-{% block extra_scripts %}
-<script>
-function triggerImmediateFetch() {
-    const btn = document.getElementById('btnFetchSidebar');
-    const status = document.getElementById('fetchStatusText');
-    btn.disabled = true;
-    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> फेचिंग जारी है...';
-    
-    fetch('{{ url_for("api_fetch_now") }}', { method: 'POST' })
-        .then(res => res.json())
-        .then(data => {
-            btn.innerHTML = '<i class="fa-solid fa-check"></i> फेच शुरू हो गया!';
-            status.innerText = data.message;
-            status.classList.remove('hidden');
-            setTimeout(() => {
-                location.reload();
-            }, 3000);
-        })
-        .catch(err => {
-            btn.disabled = false;
-            btn.innerHTML = '<i class="fa-solid fa-rotate"></i> पुनः प्रयास करें';
-        });
-}
-</script>
 {% endblock %}
