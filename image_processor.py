@@ -69,13 +69,12 @@ def extract_real_image_url(publisher_url):
         pass
     return None
 
-def download_and_convert_image(image_url, article_id_str):
+def download_and_convert_image(image_url, article_id_str, force=False):
     """
     Downloads original image, processes it with Pillow:
     - Re-encodes to RGB JPEG
     - Resizes to standard 16:9 news proportion (800x450 max)
-    - Adds subtle bottom-right brand watermark 'PunjabState News'
-    - Saves locally as /static/news_images/<hash>.jpg
+    - Saves locally as /static/news_images/<hash>.jpg with zero watermarks
     Returns relative URL e.g. '/static/news_images/<hash>.jpg'
     """
     if not image_url or not image_url.startswith('http'):
@@ -87,7 +86,7 @@ def download_and_convert_image(image_url, article_id_str):
     relative_url = f"/static/news_images/{filename}"
 
     # If already downloaded and converted, return it
-    if os.path.exists(local_path) and os.path.getsize(local_path) > 2000:
+    if not force and os.path.exists(local_path) and os.path.getsize(local_path) > 2000:
         return relative_url
 
     try:
@@ -111,22 +110,8 @@ def download_and_convert_image(image_url, article_id_str):
                 target_h = 500
             img = img.resize((target_w, target_h), Image.Resampling.LANCZOS)
 
-        # Add subtle, professional watermark badge on bottom right
-        draw = ImageDraw.Draw(img)
-        text = "PunjabState News"
-        
-        # Draw translucent badge box on bottom right
-        box_w = 140
-        box_h = 24
-        box_x = img.width - box_w - 12
-        box_y = img.height - box_h - 10
-        
-        # Semi-transparent dark overlay for watermark text
-        draw.rectangle([box_x, box_y, box_x + box_w, box_y + box_h], fill=(15, 23, 42))
-        draw.text((box_x + 12, box_y + 5), text, fill=(255, 255, 255))
-
-        # Save with optimized JPEG quality
-        img.save(local_path, "JPEG", quality=85, optimize=True)
+        # Save clean image without any watermark
+        img.save(local_path, "JPEG", quality=88, optimize=True)
         return relative_url
 
     except Exception as e:
@@ -190,7 +175,7 @@ def generate_news_card(title, city_name="Punjab", category="general"):
     except Exception as e:
         return relative_url
 
-def process_article_real_image(google_url, fallback_image=None, title="", city_name="Punjab", category="general"):
+def process_article_real_image(google_url, fallback_image=None, title="", city_name="Punjab", category="general", force=False):
     """
     Full pipeline:
     Google RSS link -> Real Publisher URL -> Real image URL -> Downloaded, converted local image.
@@ -205,7 +190,7 @@ def process_article_real_image(google_url, fallback_image=None, title="", city_n
         if pub_url and pub_url != google_url:
             real_img_url = extract_real_image_url(pub_url)
             if real_img_url:
-                local_img = download_and_convert_image(real_img_url, pub_url)
+                local_img = download_and_convert_image(real_img_url, pub_url, force=force)
                 if local_img:
                     return local_img
     except Exception as e:
