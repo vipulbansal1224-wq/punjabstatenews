@@ -40,11 +40,21 @@ CATEGORY_KEYWORDS = {
     ]
 }
 
+# Media channels & agencies to completely scrub from all stories
+MEDIA_CHANNELS = [
+    'Hindustan Times', 'The Tribune', 'Tribune News Service', 'Tribune', 'The Indian Express', 'Indian Express',
+    'Express News Service', 'NDTV', 'PTC News', 'PTC', 'Babushahi.com', 'Babushahi', 'Punjab Newsline',
+    'Newsline', 'Dainik Bhaskar', 'Bhaskar', 'Amar Ujala', 'Dainik Jagran', 'Jagran', 'Punjab Kesari',
+    'Times of India', 'TOI', 'India Today', 'Aaj Tak', 'Zee News', 'Zee Punjab', 'Zee', 'News18 Punjab', 'News18',
+    'ABP Sanjha', 'ABP News', 'ABP Live', 'ABP', 'ANI', 'PTI', 'IANS', 'UNI', 'BBC News', 'BBC Hindi', 'BBC Punjabi', 'BBC',
+    'ETV Bharat', 'Live Law', 'Bar and Bench', 'Newsonair', 'Akashvani', 'All India Radio', 'AIR News',
+    'Daily Post Punjab', 'Daily Post', 'Rozana Spokesman', 'Spokesman'
+]
+
 def clean_html(raw_html):
     if not raw_html:
         return ""
     soup = BeautifulSoup(raw_html, "html.parser")
-    # Remove script and style tags
     for s in soup(['script', 'style', 'a']):
         s.extract()
     text = soup.get_text(separator=' ')
@@ -52,14 +62,48 @@ def clean_html(raw_html):
 
 def clean_headline(title):
     """
-    Strips trailing media tags like '- NDTV', '- India Today', '- The Tribune'
+    Completely eliminates news channels, network tags, and reporter names from headlines.
     """
     if not title:
         return ""
-    # Remove source attribution after dash or pipe
-    title = re.sub(r'\s*[-|–—]\s*[^–—|-]+$', '', title).strip()
     title = html.unescape(title)
+
+    # 1. Remove trailing channel attribution e.g. " - NDTV", " | Hindustan Times", " - The Tribune"
+    title = re.sub(r'\s*[-|–—:]\s*(?:' + '|'.join(re.escape(c) for c in MEDIA_CHANNELS) + r')\b.*$', '', title, flags=re.IGNORECASE)
+    # 2. General trailing dash/pipe source tags
+    title = re.sub(r'\s*[-|–—]\s*[^–—|-]+$', '', title).strip()
+    # 3. Remove leading channel name e.g. "PTC News: ..." or "Babushahi | ..."
+    title = re.sub(r'^(?:' + '|'.join(re.escape(c) for c in MEDIA_CHANNELS) + r')\s*[-|–—:]\s*', '', title, flags=re.IGNORECASE)
+    # 4. Remove inline (Channel) or (ANI/PTI)
+    title = re.sub(r'\s*\((?:' + '|'.join(re.escape(c) for c in MEDIA_CHANNELS) + r')\)\s*', ' ', title, flags=re.IGNORECASE)
+    # 5. Remove "By Reporter Name" patterns
+    title = re.sub(r'\b(?:by|reported by)\s+[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*\b', '', title, flags=re.IGNORECASE)
+    # 6. Scrub any remaining direct channel name matches
+    for c in MEDIA_CHANNELS:
+        title = re.sub(r'\b' + re.escape(c) + r'\b', '', title, flags=re.IGNORECASE)
+
+    title = re.sub(r'\s+', ' ', title).strip()
+    title = re.sub(r'^[^\w\s]+|[^\w\s]+$', '', title).strip()
     return title
+
+def clean_editorial_text(text):
+    """
+    Completely eliminates reporter bylines and media channel names from editorial text.
+    Replaces agency citations with local bureau phrasing.
+    """
+    if not text:
+        return ""
+    # Remove reporter bylines e.g. "Reported by Staff Reporter:", "By Correspondent:"
+    text = re.sub(r'\b(?:By|Reported by|Special Correspondent|Staff Reporter|Express News Service|Tribune News Service|Correspondent)\b.*?(?:[-—–:]\s*|\n)', '', text, flags=re.IGNORECASE)
+    # Remove city + agency lead-ins e.g. "CHANDIGARH (ANI) —"
+    text = re.sub(r'^[A-Z\s,]+\((?:ANI|PTI|UNI|IANS)\)\s*[-—–:]\s*', '', text, flags=re.IGNORECASE)
+    # Replace channel references with neutral bureau attribution
+    for c in MEDIA_CHANNELS:
+        text = re.sub(r'\b(?:according to|as reported by|told)\s+' + re.escape(c) + r'\b', 'स्थानीय सूत्रों के अनुसार', text, flags=re.IGNORECASE)
+        text = re.sub(r'\b' + re.escape(c) + r'\b', '', text, flags=re.IGNORECASE)
+
+    text = re.sub(r'\s+', ' ', text).strip()
+    return text
 
 def classify_category(text):
     text_lower = text.lower()
@@ -108,8 +152,8 @@ def rewrite_article(raw_title, raw_summary, city_info, source_name="Agency"):
     combined_text = f"{cleaned_title} {raw_summary}"
     category = classify_category(combined_text)
 
-    # Clean summary
-    clean_sum = clean_html(raw_summary)
+    # Clean summary and scrub any channel/reporter names
+    clean_sum = clean_editorial_text(clean_html(raw_summary))
     if not clean_sum or len(clean_sum) < 20:
         clean_sum = f"{city_name} ({city_info.get('hindi', '')}) से ताज़ा घटनाक्रम सामने आया है, जिसमें {cleaned_title} को लेकर चर्चा बनी हुई है।"
 
