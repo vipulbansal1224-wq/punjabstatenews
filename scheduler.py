@@ -9,17 +9,24 @@ from fetcher import fetch_all_punjab_news
 from config import FETCH_INTERVAL_MINUTES
 
 _scheduler_running = False
+_is_fetching = False
 _last_run_time = None
 _last_fetched_count = 0
 
 def run_job():
-    global _last_run_time, _last_fetched_count
+    global _last_run_time, _last_fetched_count, _is_fetching
+    if _is_fetching:
+        print("[Scheduler] Sweep already in progress, skipping duplicate run.")
+        return
+    _is_fetching = True
     try:
         count = fetch_all_punjab_news(max_items_per_city=3)
         _last_run_time = time.strftime('%Y-%m-%d %H:%M:%S')
         _last_fetched_count = count
     except Exception as e:
         print(f"Error during scheduled sweep: {e}")
+    finally:
+        _is_fetching = False
 
 def scheduler_worker():
     schedule.every(FETCH_INTERVAL_MINUTES).minutes.do(run_job)

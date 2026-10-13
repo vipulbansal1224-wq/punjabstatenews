@@ -9,8 +9,9 @@ from datetime import datetime
 from config import DB_PATH, PUNJAB_DISTRICTS
 
 def get_db():
-    conn = sqlite3.connect(DB_PATH)
+    conn = sqlite3.connect(DB_PATH, timeout=30.0, check_same_thread=False)
     conn.row_factory = sqlite3.Row
+    conn.execute("PRAGMA busy_timeout = 30000;")
     return conn
 
 def slugify(text):
@@ -22,6 +23,13 @@ def slugify(text):
 def init_db():
     conn = get_db()
     cursor = conn.cursor()
+
+    # Enable WAL mode for high concurrency (readers never block writers, zero lag)
+    try:
+        cursor.execute("PRAGMA journal_mode = WAL;")
+        cursor.execute("PRAGMA synchronous = NORMAL;")
+    except Exception:
+        pass
 
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS articles (
@@ -45,6 +53,13 @@ def init_db():
         is_featured INTEGER DEFAULT 0
     )
     """)
+
+    # Performance indexes for ultra-fast query responses on refresh
+    cursor.execute("CREATE INDEX IF NOT EXISTS idx_articles_city ON articles(city);")
+    cursor.execute("CREATE INDEX IF NOT EXISTS idx_articles_category ON articles(category);")
+    cursor.execute("CREATE INDEX IF NOT EXISTS idx_articles_published ON articles(published_at DESC);")
+    cursor.execute("CREATE INDEX IF NOT EXISTS idx_articles_breaking ON articles(is_breaking);")
+    cursor.execute("CREATE INDEX IF NOT EXISTS idx_articles_featured ON articles(is_featured);")
 
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS ad_slots (

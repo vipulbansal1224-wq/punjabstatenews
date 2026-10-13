@@ -104,24 +104,31 @@ def fetch_news_for_city(city_info, max_items=MAX_ITEMS_PER_CITY):
 
     return new_articles
 
+import gc
+
 def fetch_all_punjab_news(max_items_per_city=3):
     """
-    Main job that sweeps all 23 districts of Punjab
+    Main job that sweeps all 23 districts of Punjab silently in background
     """
     total_added = 0
     start_time = time.time()
-    print(f"[{datetime.now().strftime('%H:%M:%S')}] Starting PunjabState News automated sweep across 23 districts...")
+    print(f"[{datetime.now().strftime('%H:%M:%S')}] Starting PunjabState News silent sweep across 23 districts...")
 
     for city in PUNJAB_DISTRICTS:
-        added = fetch_news_for_city(city, max_items=max_items_per_city)
-        if added:
-            total_added += len(added)
-            print(f"  [+] {city['name']}: +{len(added)} new stories")
-        # Gentle pacing between requests
-        time.sleep(0.3)
+        try:
+            added = fetch_news_for_city(city, max_items=max_items_per_city)
+            if added:
+                total_added += len(added)
+                print(f"  [+] {city['name']}: +{len(added)} new stories")
+        except Exception as err:
+            print(f"  [-] Skipped {city['name']} on error: {err}")
+        # Gentle pacing between requests to prevent CPU spike
+        time.sleep(0.5)
+        gc.collect()
 
     elapsed = round(time.time() - start_time, 2)
     print(f"[{datetime.now().strftime('%H:%M:%S')}] Sweep completed in {elapsed}s. Total new articles: {total_added}")
+    gc.collect()
     return total_added
 
 if __name__ == "__main__":
