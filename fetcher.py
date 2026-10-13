@@ -31,16 +31,24 @@ def is_breaking_story(title):
 
 def fetch_news_for_city(city_info, max_items=MAX_ITEMS_PER_CITY):
     """
-    Fetches real-time news for a specific Punjab district
+    Fetches real-time fresh news for a specific Punjab district (last 24 hours)
     """
-    query = city_info.get("query", f"{city_info['name']} Punjab news")
+    base_query = city_info.get("query", f"{city_info['name']} Punjab news")
+    # Always fetch latest 24 hours news (when:1d) so news is fresh from today
+    query = f"{base_query} when:1d"
     encoded_query = urllib.parse.quote(query)
     feed_url = GOOGLE_NEWS_RSS_URL.format(query=encoded_query)
 
     new_articles = []
     try:
         feed = feedparser.parse(feed_url)
-        if not feed.entries:
+        # If no entries found in the last 24h for a smaller district, fallback to 2 days
+        if not feed or not feed.entries:
+            query = f"{base_query} when:2d"
+            feed_url = GOOGLE_NEWS_RSS_URL.format(query=urllib.parse.quote(query))
+            feed = feedparser.parse(feed_url)
+
+        if not feed or not feed.entries:
             return []
 
         for entry in feed.entries[:max_items]:
@@ -61,6 +69,7 @@ def fetch_news_for_city(city_info, max_items=MAX_ITEMS_PER_CITY):
 
             # Assign Real Converted News Image
             category = enhanced['category']
+            fallback_img = CATEGORY_IMAGES.get(category, city_info.get('image', '/static/images/logo.svg'))
             image_url = process_article_real_image(
                 source_url,
                 fallback_img,

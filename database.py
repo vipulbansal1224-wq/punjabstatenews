@@ -180,7 +180,7 @@ def get_recent_articles(limit=24, offset=0):
     cursor = conn.cursor()
     cursor.execute("""
     SELECT * FROM articles
-    ORDER BY id DESC
+    ORDER BY published_at DESC, id DESC
     LIMIT ? OFFSET ?
     """, (limit, offset))
     rows = cursor.fetchall()
@@ -193,7 +193,7 @@ def get_articles_by_city(city_id, limit=20, offset=0):
     cursor.execute("""
     SELECT * FROM articles
     WHERE city = ?
-    ORDER BY id DESC
+    ORDER BY published_at DESC, id DESC
     LIMIT ? OFFSET ?
     """, (city_id, limit, offset))
     rows = cursor.fetchall()
@@ -206,7 +206,7 @@ def get_articles_by_category(category_id, limit=20, offset=0):
     cursor.execute("""
     SELECT * FROM articles
     WHERE category = ?
-    ORDER BY id DESC
+    ORDER BY published_at DESC, id DESC
     LIMIT ? OFFSET ?
     """, (category_id, limit, offset))
     rows = cursor.fetchall()
@@ -218,8 +218,8 @@ def get_breaking_news(limit=8):
     cursor = conn.cursor()
     cursor.execute("""
     SELECT id, title, slug, city_name, published_at FROM articles
-    WHERE is_breaking = 1 OR id IN (SELECT id FROM articles ORDER BY id DESC LIMIT ?)
-    ORDER BY id DESC
+    WHERE is_breaking = 1 OR id IN (SELECT id FROM articles ORDER BY published_at DESC, id DESC LIMIT ?)
+    ORDER BY published_at DESC, id DESC
     LIMIT ?
     """, (limit, limit))
     rows = cursor.fetchall()
@@ -231,7 +231,7 @@ def get_featured_news(limit=5):
     cursor = conn.cursor()
     cursor.execute("""
     SELECT * FROM articles
-    ORDER BY is_featured DESC, id DESC
+    ORDER BY published_at DESC, is_featured DESC, id DESC
     LIMIT ?
     """, (limit,))
     rows = cursor.fetchall()

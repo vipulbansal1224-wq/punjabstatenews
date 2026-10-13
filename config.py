@@ -243,8 +243,8 @@ CATEGORY_IMAGES = {
     "general": "https://images.unsplash.com/photo-1585829365295-ab7cd400c167?auto=format&fit=crop&w=800&q=80"
 }
 
-# Fetcher Settings
-FETCH_INTERVAL_MINUTES = 15
+# Fetcher Settings - Auto updates every 1 hour (60 minutes)
+FETCH_INTERVAL_MINUTES = 60
 MAX_ITEMS_PER_CITY = 5
 GOOGLE_NEWS_RSS_URL = "https://news.google.com/rss/search?q={query}&hl=en-IN&gl=IN&ceid=IN:en"
 

@@ -29,6 +29,9 @@ def run_job():
         _is_fetching = False
 
 def scheduler_worker():
+    # Initial gentle sweep 10s after startup so fresh news is ready on boot/deploy
+    time.sleep(10)
+    run_job()
     schedule.every(FETCH_INTERVAL_MINUTES).minutes.do(run_job)
     while True:
         schedule.run_pending()
